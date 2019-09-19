@@ -48,6 +48,14 @@ def analyze_screenshot(image, boundaries):
 
 
 def find_button_coords():
+    """
+    This function will locate the center of the button at the time the
+    function is called.
+
+    :return: x_coord, y_coord
+        A tuple containing the x and y
+        coordinates of the center of the button
+    """
     # Get the mouse out of the way
     autopy.mouse.move(0, 0)
     time.sleep(.1)
@@ -73,8 +81,17 @@ def find_button_coords():
 
 
 def find_and_click_button():
+    """
+    This function will locate the position of the button, using
+    find_button_coords, and clicks the center of the button once. At
+    the end of the function, the mouse is moved to (0, 0) to get out of
+    the way.
+
+    :return: x_coord, y_coord
+        A tuple of information containg the location
+        of the center of the button before it was clicked.
+    """
     x, y = find_button_coords()
-    print(f"Button Coords: x: {x} y: {y}")
 
     # Move the mouse to the specific location
     autopy.mouse.move(x, y)
@@ -91,24 +108,66 @@ def find_and_click_button():
     return x, y
 
 def calculate_distance():
+    """
+    This function calculates the number of pixels that the button moves
+    when the button is clicked.
+
+    :return: x_coord, y_coord, x_dist, y_dist
+        A tuple of information containing the current coordinates of the
+        center of the button (x_coord anf y_coord) and the distance that
+        the button moved (x_dist and y_dist)
+    """
 
     # Clicks the button once
     x1, y1 = find_and_click_button()
 
+    time.sleep(.3)
+
     # Find the coords of the button again
     x2, y2 = find_button_coords()
 
-    x = x2 - x1
-    y = y2 - y1
-    return x, y
+    time.sleep(.3)
+
+    x_dist = x2 - x1
+    y_dist = y2 - y1
+
+    print(f"Distance calcualted: x: {x_dist} y: {y_dist}")
+
+    return x2, y2, x_dist, y_dist
+
+def predict_and_click_button_location(iterations):
+    """
+    This function will predict the location of the center of the circle
+    and will click the predicted location.
+
+    :param iterations: The number of times to click the button based on predictions
+    :return: None
+    """
+
+    time.sleep(.3)
+
+    curr_x, curr_y, x_dist, y_dist = calculate_distance()
+
+    for i in range(0, iterations):
+        autopy.mouse.move(curr_x, curr_y)
+        time.sleep(.25)
+        autopy.mouse.click()
+
+        curr_x += x_dist
+        curr_y += y_dist
+
+        if curr_x < 0 or curr_y < 0:
+            break
 
 def main():
     """
     This where the main loop occurs.
     """
-
+    
     while (True):
-        find_and_click_button()
+        predict_and_click_button_location(5)
+
+
 
 
 
