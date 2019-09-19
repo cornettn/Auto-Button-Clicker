@@ -69,18 +69,15 @@ def find_button_coords():
     y_location = numpy.mean(indices[0])
 
     # Divided by 2 to scale to my screen
-    coords = dict()
-    coords['x'] = x_location / 2
-    coords['y'] = y_location / 2
-    return coords
+    return x_location / 2, y_location / 2
 
 
 def find_and_click_button():
-    coords = find_button_coords()
-    print(f"Button Coords: x: {coords['x']} y: {coords['y']}")
+    x, y = find_button_coords()
+    print(f"Button Coords: x: {x} y: {y}")
 
     # Move the mouse to the specific location
-    autopy.mouse.move(coords['x'], coords['y'])
+    autopy.mouse.move(x, y)
 
     # Wait for autopy to move the mouse
     time.sleep(.1)
@@ -89,20 +86,21 @@ def find_and_click_button():
     autopy.mouse.click()
 
     autopy.mouse.move(0, 0)
+    time.sleep(.1)
 
-    return coords
+    return x, y
 
 def calculate_distance():
 
     # Clicks the button once
-    first_coords = find_and_click_button()
+    x1, y1 = find_and_click_button()
 
     # Find the coords of the button again
-    second_coords = find_button_coords()
-    dist = dict()
-    dist['x'] = second_coords['x'] - first_coords['x']
-    dist['y'] = second_coords['y'] - second_coords['y']
-    return dist
+    x2, y2 = find_button_coords()
+
+    x = x2 - x1
+    y = y2 - y1
+    return x, y
 
 def main():
     """
@@ -110,35 +108,7 @@ def main():
     """
 
     while (True):
-        # Get the HSV formatted screenshot
-        image = get_screenshot()
-
-        # Values are stored as HSV
-        orange_boundaries = [([13, 203, 187], [13, 203, 187])]
-
-        # Analyze the screenshot to find specific colored pixels
-        analzyed_image = analyze_screenshot(image, orange_boundaries)
-
-        # Get location of desired pixels
-        indices = numpy.where(analzyed_image == [255])
-
-        # Get mean of x location and y location to find center of circle
-        x_location = numpy.mean(indices[1])
-        y_location = numpy.mean(indices[0])
-
-        # Move the mouse to the specific location
-        autopy.mouse.move(x_location / 2, y_location / 2)
-
-        # Wait for autopy to move the mouse
-        time.sleep(.1)
-
-        # Click
-        autopy.mouse.click()
-
-        autopy.mouse.move(0, 0)
-
-        time.sleep(.5)
-
+        find_and_click_button()
 
 
 
